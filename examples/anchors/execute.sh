@@ -1,0 +1,1 @@
+./jsonschema.exe generate --yaml examples/anchors/input.yaml --csv examples/anchors/metadata.csv --output examples/anchors/output.schema.json --verbose --yaml-diff --dump-normalized-yaml-file examples/anchors/normalized.yaml --remove-anchor-bases pipeline-base

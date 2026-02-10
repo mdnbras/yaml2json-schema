@@ -1,0 +1,1 @@
+./jsonschema.exe generate --yaml examples/simple/input.yaml --csv examples/simple/metadata.csv --output examples/simple/output.schema.json --verbose
