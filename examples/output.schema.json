@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "pipelines": {
+      "type": "object",
+      "properties": {
+        "ingestion": {
+          "type": "object",
+          "description": "Map de pipelines",
+          "properties": {
+            "[PIPELINE_1]": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "source": {
+                  "type": "object",
+                  "properties": {
+                    "connection-ref": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "staging": {
+                  "type": "object",
+                  "properties": {
+                    "collection-name": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Pipeline",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Descrição"
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Habilita pipeline"
+              },
+              "source": {
+                "type": "object",
+                "description": "Configuração da origem",
+                "properties": {
+                  "connection-ref": {
+                    "type": "string",
+                    "description": "Conexão"
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "Query SQL"
+                  }
+                },
+                "required": [
+                  "connection-ref",
+                  "query"
+                ],
+                "additionalProperties": false
+              },
+              "staging": {
+                "type": "object",
+                "description": "Configuração staging",
+                "properties": {
+                  "collection-name": {
+                    "type": "string",
+                    "description": "Coleção"
+                  }
+                },
+                "required": [
+                  "collection-name"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "staging",
+              "source",
+              "enabled"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "ingestion"
+      ],
+      "additionalProperties": false
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "age": {
+          "type": "number",
+          "description": "Idade do usuário"
+        },
+        "emails": {
+          "type": "array",
+          "description": "Emails",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome do usuário"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

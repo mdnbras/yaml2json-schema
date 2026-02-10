@@ -1,0 +1,16 @@
+pipelines:
+  ingestion:
+    "[PIPELINE_1]":
+      enabled: true
+      description: "Description"
+      source:
+        connection-ref: "MYSQL1"
+        query: |-
+          SELECT * FROM table WHERE ID > :id_seq
+      staging:
+        collection-name: "ingestion-pipeline-1"
+user:
+  name: string
+  age: number
+  emails:
+    - string
