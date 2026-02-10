@@ -1,0 +1,3 @@
+- Links uteis para validação
+    - Converte um YAML para JSON: https://onlineyamltools.com/convert-yaml-to-json
+    - Valida se o um json/yaml condiz com o schema.json gerado: https://www.jsonschemavalidator.net/
