@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mdnbras/yaml2json-schema/internal/config"
 	"github.com/mdnbras/yaml2json-schema/internal/generator"
@@ -61,6 +62,24 @@ func init() {
 		"Versão do JSON Schema",
 	)
 
+	generateCmd.Flags().Bool(
+		"yaml-diff",
+		false,
+		"Exibe o diff entre o YAML original e o YAML normalizado (anchors resolvidas)",
+	)
+
+	generateCmd.Flags().String(
+		"dump-normalized-yaml-file",
+		"",
+		"Salva o YAML normalizado (anchors resolvidas) no arquivo informado",
+	)
+
+	generateCmd.Flags().String(
+		"remove-anchor-bases",
+		"",
+		"Lista de chaves YAML (separadas por vírgula) a serem removidas após resolver anchors",
+	)
+
 	_ = generateCmd.MarkFlagRequired("yaml")
 	_ = generateCmd.MarkFlagRequired("csv")
 }
@@ -68,7 +87,6 @@ func init() {
 func runGenerate(cmd *cobra.Command) error {
 	verbose, _ := cmd.Flags().GetBool("verbose")
 	generateOpts.Verbose = verbose
-
 	if verbose {
 		fmt.Println("▶ Iniciando geração do JSON Schema (Draft-07)")
 	}
@@ -78,9 +96,33 @@ func runGenerate(cmd *cobra.Command) error {
 		fmt.Println("▶ Lendo YAML:", generateOpts.YamlPath)
 	}
 
-	rootField, err := parser.ParseYAML(generateOpts.YamlPath)
+	basesArg, _ := cmd.Flags().GetString("remove-anchor-bases")
+	var bases []string
+	if basesArg != "" {
+		bases = strings.Split(basesArg, ",")
+	}
+
+	showDiff, _ := cmd.Flags().GetBool("yaml-diff")
+	dumpFile, _ := cmd.Flags().GetString("dump-normalized-yaml-file")
+
+	rootField, normalizedYAML, err := parser.ParseYAML(
+		generateOpts.YamlPath,
+		showDiff,
+		bases,
+	)
 	if err != nil {
 		return fmt.Errorf("erro ao processar YAML: %w", err)
+	}
+
+	// 💾 Dump do YAML normalizado em arquivo
+	if dumpFile != "" {
+		if err := os.WriteFile(dumpFile, normalizedYAML, 0644); err != nil {
+			return fmt.Errorf(
+				"erro ao salvar YAML normalizado em '%s': %w",
+				dumpFile,
+				err,
+			)
+		}
 	}
 
 	// 2️⃣ Parse CSV

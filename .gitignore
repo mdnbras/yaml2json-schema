@@ -1,2 +1,4 @@
 jsonschema.exe
 jsonschema
+examples/**/*.json
+.idea
