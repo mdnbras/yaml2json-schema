@@ -91,7 +91,6 @@ func runGenerate(cmd *cobra.Command) error {
 		fmt.Println("▶ Iniciando geração do JSON Schema (Draft-07)")
 	}
 
-	// 1️⃣ Parse YAML
 	if verbose {
 		fmt.Println("▶ Lendo YAML:", generateOpts.YamlPath)
 	}
@@ -114,7 +113,6 @@ func runGenerate(cmd *cobra.Command) error {
 		return fmt.Errorf("erro ao processar YAML: %w", err)
 	}
 
-	// 💾 Dump do YAML normalizado em arquivo
 	if dumpFile != "" {
 		if err := os.WriteFile(dumpFile, normalizedYAML, 0644); err != nil {
 			return fmt.Errorf(
@@ -125,7 +123,6 @@ func runGenerate(cmd *cobra.Command) error {
 		}
 	}
 
-	// 2️⃣ Parse CSV
 	if verbose {
 		fmt.Println("▶ Lendo CSV:", generateOpts.CsvPath)
 	}
@@ -135,7 +132,6 @@ func runGenerate(cmd *cobra.Command) error {
 		return fmt.Errorf("erro ao processar CSV: %w", err)
 	}
 
-	// 3️⃣ Merge YAML + CSV
 	if verbose {
 		fmt.Println("▶ Aplicando metadados (merge)")
 	}
@@ -144,7 +140,6 @@ func runGenerate(cmd *cobra.Command) error {
 		return fmt.Errorf("erro ao aplicar metadados: %w", err)
 	}
 
-	// 4️⃣ Geração do JSON Schema
 	if verbose {
 		fmt.Println("▶ Gerando JSON Schema")
 	}
@@ -157,7 +152,6 @@ func runGenerate(cmd *cobra.Command) error {
 		return fmt.Errorf("erro ao gerar JSON Schema: %w", err)
 	}
 
-	// 5️⃣ Validação contra meta-schema Draft-07
 	if verbose {
 		fmt.Println("▶ Validando JSON Schema contra Draft-07")
 	}
@@ -166,7 +160,6 @@ func runGenerate(cmd *cobra.Command) error {
 		return err
 	}
 
-	// 6️⃣ Escrita do arquivo
 	if verbose {
 		fmt.Println("▶ Salvando arquivo:", generateOpts.OutputPath)
 	}

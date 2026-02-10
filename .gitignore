@@ -1,3 +1,4 @@
 jsonschema.exe
 examples/**/*.json
+examples/**/normalized.yaml
 .idea

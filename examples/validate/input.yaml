@@ -1,0 +1,14 @@
+pipeline-base: &pipeline_source_base
+  source:
+    connection-ref: "MYSQL1"
+    query: |-
+      SELECT * FROM table WHERE ID > :id_seq
+
+pipelines:
+  ingestion:
+    "[NAME_PIPELINE]":
+      enabled: true
+      description: "Description"
+      <<: *pipeline_source_base
+      staging:
+        collection-name: "ingestion-pipeline-1"
