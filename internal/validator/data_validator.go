@@ -4,19 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	"gopkg.in/yaml.v3"
 )
 
-// ValidateDataAgainstSchema valida um YAML de entrada
-// contra um JSON Schema Draft-07.
 func ValidateDataAgainstSchema(
 	schemaJSON []byte,
-	inputYAML []byte,
+	input []byte,
 ) error {
 
-	// 1️⃣ Carrega o schema
 	compiler := jsonschema.NewCompiler()
 
 	if err := compiler.AddResource(
@@ -31,25 +29,31 @@ func ValidateDataAgainstSchema(
 		return fmt.Errorf("schema inválido: %w", err)
 	}
 
-	// 2️⃣ YAML → interface{}
 	var data interface{}
-	if err := yaml.Unmarshal(inputYAML, &data); err != nil {
-		return fmt.Errorf("erro ao ler input YAML: %w", err)
+
+	trimmed := strings.TrimSpace(string(input))
+
+	if len(trimmed) > 0 && (trimmed[0] == '{' || trimmed[0] == '[') {
+		if err := json.Unmarshal(input, &data); err != nil {
+			return fmt.Errorf("erro ao ler JSON: %w", err)
+		}
+	} else {
+		if err := yaml.Unmarshal(input, &data); err != nil {
+			return fmt.Errorf("erro ao ler YAML: %w", err)
+		}
 	}
 
-	// 3️⃣ Normaliza YAML → JSON types
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("erro ao converter YAML para JSON: %w", err)
+		return fmt.Errorf("erro ao converter dados para JSON: %w", err)
 	}
 
-	var jsonData interface{}
-	if err := json.Unmarshal(jsonBytes, &jsonData); err != nil {
+	var normalized interface{}
+	if err := json.Unmarshal(jsonBytes, &normalized); err != nil {
 		return fmt.Errorf("erro ao normalizar dados: %w", err)
 	}
 
-	// 4️⃣ Validação real
-	if err := schema.Validate(jsonData); err != nil {
+	if err := schema.Validate(normalized); err != nil {
 		return fmt.Errorf("input inválido segundo o schema: %w", err)
 	}
 

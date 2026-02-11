@@ -1,0 +1,26 @@
+{
+  "pipelines": {
+    "ingestion": {
+      "[NAME_PIPELINE]": {
+        "description": "Description",
+        "enabled": true,
+        "params": [
+          {
+            "value": 1000
+          },
+          {
+            "value": "TESTE"
+          }
+        ],
+        "source": {
+          "connection-ref": "MYSQL1",
+          "query": "SELECT * FROM table WHERE ID > :id_seq"
+        },
+        "staging": {
+          "collection-name": "ingestion-pipeline-1",
+          "size": 1000
+        }
+      }
+    }
+  }
+}
