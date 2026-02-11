@@ -58,6 +58,6 @@ func runValidate(cmd *cobra.Command) error {
 		return err
 	}
 
-	fmt.Println("✔ Input YAML é válido segundo o schema")
+	fmt.Println("✔ Input YAML/JSON é válido segundo o schema")
 	return nil
 }
