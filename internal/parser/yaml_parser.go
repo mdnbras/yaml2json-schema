@@ -4,6 +4,7 @@ import (
 	_ "bytes"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mdnbras/yaml2json-schema/internal/model"
 	"github.com/mdnbras/yaml2json-schema/internal/utils"
@@ -54,7 +55,6 @@ func ParseYAML(
 
 func parseNode(name string, node *yaml.Node) (*model.Field, error) {
 
-	// 🔥 RESOLVE ALIAS AQUI
 	if node.Kind == yaml.AliasNode {
 		if node.Alias == nil {
 			return nil, fmt.Errorf("alias YAML inválido em %s", name)
@@ -79,6 +79,11 @@ func parseNode(name string, node *yaml.Node) (*model.Field, error) {
 			child, err := parseNode(key, value)
 			if err != nil {
 				return nil, err
+			}
+
+			if strings.HasPrefix(key, "[") && strings.HasSuffix(key, "]") {
+				field.AdditionalProperties = child
+				continue
 			}
 
 			field.Properties[key] = child

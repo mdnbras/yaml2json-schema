@@ -1,7 +1,7 @@
 package merger
 
 import (
-	_ "fmt"
+	"fmt"
 	"strings"
 
 	"github.com/mdnbras/yaml2json-schema/internal/model"
@@ -30,34 +30,84 @@ func applyMetadata(root *model.Field, path string, meta model.FieldMetadata) err
 	current := root
 
 	for _, token := range tokens {
-		switch token {
-
-		case "*":
+		switch {
+		case token == "*":
 			if current.AdditionalProperties == nil {
 				current.AdditionalProperties = &model.Field{
 					Name: "*",
-					Type: meta.Type,
 				}
 			}
 			current = current.AdditionalProperties
+
+		case strings.HasSuffix(token, "[]"):
+			base := strings.TrimSuffix(token, "[]")
+
+			if current.Properties == nil {
+				current.Properties = make(map[string]*model.Field)
+			}
+
+			if _, ok := current.Properties[base]; !ok {
+				current.Properties[base] = &model.Field{
+					Name: base,
+					Type: "array",
+				}
+			}
+
+			arrayField := current.Properties[base]
+
+			// Garante que é array
+			if arrayField.Type != "" && arrayField.Type != "array" {
+				return fmt.Errorf(
+					"conflito de tipo no path '%s': esperado array mas é %s",
+					path,
+					arrayField.Type,
+				)
+			}
+
+			if arrayField.Items == nil {
+				arrayField.Items = &model.Field{
+					Name: base + "_item",
+				}
+			}
+
+			current = arrayField.Items
 
 		default:
 			if current.Properties == nil {
 				current.Properties = make(map[string]*model.Field)
 			}
+
 			if _, ok := current.Properties[token]; !ok {
 				current.Properties[token] = &model.Field{
 					Name: token,
 				}
 			}
+
 			current = current.Properties[token]
 		}
 	}
 
 	current.Description = meta.Description
 	current.Required = meta.Required
+
 	if meta.Type != "" {
-		current.Type = meta.Type
+
+		// Não sobrescreve tipo estrutural diferente
+		if current.Type != "" && current.Type != meta.Type {
+			// Permite multi-type (string|number)
+			if strings.Contains(meta.Type, "|") {
+				current.Type = meta.Type
+			} else {
+				return fmt.Errorf(
+					"conflito de tipo no path '%s': YAML=%s CSV=%s",
+					path,
+					current.Type,
+					meta.Type,
+				)
+			}
+		} else {
+			current.Type = meta.Type
+		}
 	}
 
 	return nil

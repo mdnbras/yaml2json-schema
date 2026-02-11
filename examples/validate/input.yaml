@@ -12,3 +12,7 @@ pipelines:
       <<: *pipeline_source_base
       staging:
         collection-name: "ingestion-pipeline-1"
+        size: 1000
+      params:
+        - value: 1000
+        - value: "TESTE"

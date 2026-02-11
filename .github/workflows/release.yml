@@ -43,6 +43,7 @@ jobs:
           cache: true
 
       - name: Build binary
+        shell: bash
         run: |
           mkdir dist
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} CGO_ENABLED=0 \
