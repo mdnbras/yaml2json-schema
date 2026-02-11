@@ -8,8 +8,8 @@ type Schema struct {
 	Schema string `json:"$schema,omitempty"`
 
 	// Core
-	Type        string `json:"type,omitempty"`
-	Description string `json:"description,omitempty"`
+	Type        interface{} `json:"type,omitempty"`
+	Description string      `json:"description,omitempty"`
 
 	// Object
 	Properties map[string]*Schema `json:"properties,omitempty"`

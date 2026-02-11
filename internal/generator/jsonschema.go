@@ -3,6 +3,7 @@ package generator
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/mdnbras/yaml2json-schema/internal/model"
 )
@@ -31,8 +32,16 @@ func Generate(
 // seguindo estritamente as regras do JSON Schema Draft-07.
 func buildSchema(field *model.Field) *model.Schema {
 	schema := &model.Schema{
-		Type:        field.Type,
 		Description: field.Description,
+	}
+
+	if field.Type != "" {
+		if strings.Contains(field.Type, "|") {
+			types := strings.Split(field.Type, "|")
+			schema.Type = types
+		} else {
+			schema.Type = field.Type
+		}
 	}
 
 	switch field.Type {
